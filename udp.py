@@ -20,7 +20,7 @@ MS = 8.98266512e-2 * SM
 MU_TRAPPIST = G * MS
 
 # DV per fuel [m/s]
-DV_per_fuel = 10000
+DV_per_fuel = 10000 # Dv do te thot 10 km/s per unit of fuel.
 
 # Maximum time to fully mine an asteroid
 TIME_TO_MINE_FULLY = 30
