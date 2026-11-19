@@ -1,43 +1,4 @@
 """
-beam_v13.py - Versioni 13 per SpOC Mine the Belt (testuar mbi candidates.txt te vertete).
-
-Ndryshimet kundrejt v12 (v13): (1) --resume zgjidhje.json: vazhdon nga nje zgjidhje ekzistuese dhe ben vetem raunde
-permiresimi (beam me i gjere nga paraardhes i rastesishem i zinxhirit); (2) --out ruhet VETEM nese rezultati eshte me i miri
-se ai qe ka skedari (disa procese mund te shkruajne te njejtin skedar); ruhet menjehere pas cdo permiresimi; (3) --rbeam,
---cut-lo/--cut-hi, --hours.
-
-Ndryshimet kundrejt v11 (v12): te gjitha kombinimet (w, tof) te screening-ut dhe te refinimit grupohen ne NJE thirrje Lambert
-(shpenzimi dominues ishte overhead-i i numpy-t per thirrje te vogla).
-
-Ndryshimet kundrejt v10 (v11): SHPEJTESI ~3x.  (1) grid pozicionesh/shpejtesish (float32, hap 1 dite, interpolim
-Hermite) per pos_proxy, qe e zevendeson kepler_state mbi 10000 asteroide; (2) lookahead-et (gamma, kappa) llogariten
-leneshem vetem per 3B gjendjet me te mira te koshes; (3) refinim me me pak kombinime dhe iters=32.
-
-Ndryshimet kundrejt v9 (v10): LOOKAHEAD I RI (kappa): kur nje kose kohore hapet, per 3B gjendjet me te mira llogaritet
-sa te lira jane hopet e ardhshme (mesatarja e 3 vlerave me te vogla te pos_proxy mbi asteroidet e renda te pavizituar)
-dhe rankingu korrigjohet me  -kappa*LA/DVF.  Kjo favorizon gjendjet qe ndodhen ne zona me fqinje te lire.
-
-Ndryshimet kundrejt v8 (v9): KANDIDATET ZGJIDHEN ME PROXY POZICIONI (pos_proxy), jo me est_dv.
-Testi mbi te dhenat reale tregoi qe est_dv (diferenca e shpejtesive rrethore + ndryshimi i planit) kap
-vetem ~22% te 20 hopeve me te lira te vertete brenda 150 kandidateve, ndersa pos_proxy
-(distanca e pozicioneve ne t+tof / tof, + shpejtesia relative) kap ~91% brenda 150 dhe ~98% brenda 300.
-
-Ndryshimet kundrejt v7 (v8): kosha kohore sipas kohes se GATSHMERISE (mberritje + minim), jo vetem mberritjes
-(--bready 1), qe gjendjet qe krahasohen te jene gati per nisje afersisht ne te njejten kohe.
-
-Ndryshimet kundrejt v6:
-  1. SHPEJTESI: refinimi i kandidateve behet i vektorizuar (Lambert per te gjithe topm ne nje thirrje
-     per cdo (w, tof)), jo me thirrje skalare pykep. Ne verifikim perdoret vetem U.udp.fitness.
-  2. LAMBERT per cifte: lambert_dv pranon edhe nisje/koha te ndryshme per cdo target.
-  3. KOSTO REALE E KARBURANTIT: zgjedhja e (w, tof) per cdo hop minimizon  dite + LAM*dv/DVF
-     (LAM = dite ekuivalente per nje njesi karburanti), ndersa rankingu i beam-it perdor LT/LF.
-  4. MASA: asteroidet me mase te vogel perjashtohen (mmin per mat 0/2, mmin1 per mat 1, fmin per
-     karburantin) - nje hop ka kosto fikse, prandaj te lehtat humbin kohe.
-  5. KARBURANTI NE FUND: vlera e karburantit kufizohet nga BURN*(dite te mbetura).
-  6. MARGJINE SIGURIE: karburanti pas cdo hopi >= EPS (1e-4), qe ndryshimet numerike pykep te mos
-     e prishin zgjidhjen.
-  7. CLI automatik per cdo parameter skalar te DEFAULT_P.
-
 Perdorimi:
     python beam_v13.py --resume u2.json --beam 100 --rounds 40 --jobs 4 --out best.json
     python beam_v12.py --beam 8 --starts 3 --stratified --jobs 4
@@ -109,7 +70,7 @@ DEFAULT_P = dict(
 REFINE_R = 6
 
 
-# ================================================================== fizika (pykep)
+# ==========================fizika
 def transfer_dv(a_from, t_dep, a_to, t_arr):
     try:
         r1, v1 = U.asteroids[a_from].eph(T0 + t_dep)
